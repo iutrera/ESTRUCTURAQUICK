@@ -1,3 +1,4 @@
+
 /// Returns a greeting for the provided name.
 pub fn greet(name: &str) -> String {
     format!("Hola, {}!", name)
@@ -12,3 +13,4 @@ mod tests {
         assert_eq!(greet("Mundo"), "Hola, Mundo!");
     }
 }
+
