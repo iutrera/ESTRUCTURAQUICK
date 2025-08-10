@@ -66,7 +66,6 @@ function init(): void {
   resize();
 
   // Shaders para colorear y dimensionar los elementos de la estructura.
-
   const program = createProgram(
     gl,
     `

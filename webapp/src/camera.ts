@@ -19,7 +19,6 @@ export class OrbitCamera {
   private offsetX = 0;
   private offsetY = 0;
 
-
   /**
    * Crea una nueva cámara orbital.
    *
@@ -39,7 +38,6 @@ export class OrbitCamera {
     canvas.addEventListener('mousedown', (e) => {
       this.dragging = true;
       this.button = e.button;
-
       this.last.x = e.clientX;
       this.last.y = e.clientY;
     });
@@ -58,7 +56,6 @@ export class OrbitCamera {
         this.rotY += dx * 0.01;
         this.rotX += dy * 0.01;
       }
-
       this.last.x = e.clientX;
       this.last.y = e.clientY;
     });
@@ -73,7 +70,6 @@ export class OrbitCamera {
   getViewMatrix(): Float32Array {
     let view = identidad();
     view = traslada(view, [this.offsetX, this.offsetY, -this.distance]);
-
     return view;
   }
 

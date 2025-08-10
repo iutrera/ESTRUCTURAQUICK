@@ -17,26 +17,16 @@ export interface FrameStructure {
   edges: Edge[];
 }
 
+
+/** Datos de la estructura cargados desde un archivo JSON. */
+import structureData from './structure.json';
+
 /**
- * Devuelve una estructura de ejemplo con forma de cubo.
- * En una aplicación real, este método podría cargar datos externos.
+ * Devuelve la estructura definida en `structure.json`.
+ * Cambiando el contenido de dicho archivo pueden renderizarse
+ * diferentes marcos sin modificar el código TypeScript.
  */
 export function loadStructure(): FrameStructure {
-  return {
-    nodes: [
-      [-1, -1, -1],
-      [1, -1, -1],
-      [1, 1, -1],
-      [-1, 1, -1],
-      [-1, -1, 1],
-      [1, -1, 1],
-      [1, 1, 1],
-      [-1, 1, 1]
-    ],
-    edges: [
-      [0, 1], [1, 2], [2, 3], [3, 0],
-      [4, 5], [5, 6], [6, 7], [7, 4],
-      [0, 4], [1, 5], [2, 6], [3, 7]
-    ]
-  };
+  return structureData as FrameStructure;
+
 }
