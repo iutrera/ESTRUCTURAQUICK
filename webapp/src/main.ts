@@ -11,6 +11,7 @@ import {
   computeBounds,
   StructureBounds,
 } from './structure';
+
 import { perspectiva, multiplica } from './math';
 import { OrbitCamera } from './camera';
 
@@ -106,7 +107,6 @@ function init(): void {
   const vertices = new Float32Array(centeredNodes.flat());
   const indices = new Uint16Array(estructura.edges.flat());
   const nodeCount = estructura.nodes.length; // cantidad de nodos para dibujar
-
   const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
@@ -128,19 +128,20 @@ function init(): void {
   // Control de cámara orbital para rotación, desplazamiento y zoom.
   // La distancia inicial se calcula a partir del tamaño de la estructura.
   const camera = new OrbitCamera(bounds.radius * 2);
+
   camera.attach(canvas);
 
   // Bucle de renderizado.
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     const proy = perspectiva(
       Math.PI / 4,
       canvas.width / canvas.height,
       0.1,
       bounds.radius * 10
     );
+
     const modelo = camera.getModelMatrix();
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
