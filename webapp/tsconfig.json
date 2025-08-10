@@ -1,0 +1,15 @@
+{
+  // TypeScript compiler configuration for the web interface.
+  "compilerOptions": {
+    // Target modern browsers with ECMAScript modules.
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "outDir": "dist"
+  },
+  "include": ["src"]
+}
