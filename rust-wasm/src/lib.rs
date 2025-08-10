@@ -1,3 +1,4 @@
+
 /*!
 Basic Rust library compiled to WebAssembly to demonstrate high-performance
 computation. The `greet` function is intentionally simple, serving as a
@@ -12,9 +13,11 @@ placeholder for future structural analysis routines.
 /// let msg = greet("Mundo");
 /// assert_eq!(msg, "Hola, Mundo!");
 /// ```
+
 pub fn greet(name: &str) -> String {
     format!("Hola, {}!", name)
 }
+
 
 /// Adds two floating-point numbers.
 ///
@@ -32,15 +35,19 @@ pub fn add(a: f64, b: f64) -> f64 {
     a + b
 }
 
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
+
     /// Verifies that the `greet` function formats the name correctly.
+
     #[test]
     fn greets_person() {
         assert_eq!(greet("Mundo"), "Hola, Mundo!");
     }
+
 
     /// Ensures that floating-point addition works as expected.
     #[test]
@@ -48,3 +55,4 @@ mod tests {
         assert!((add(2.0, 3.5) - 5.5).abs() < f64::EPSILON);
     }
 }
+
