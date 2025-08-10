@@ -1,5 +1,4 @@
 
-
 /**
  * Helper functions for interacting with the Rust-compiled WebAssembly module.
  * The WASM module exposes a simple `greet` function used here as proof of

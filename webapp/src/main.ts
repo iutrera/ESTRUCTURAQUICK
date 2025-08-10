@@ -1,5 +1,4 @@
 
-
 /**
  * Punto de entrada de la aplicación web. Utiliza WebGL puro para renderizar
  * un marco estructural cúbico interactivo sin depender de bibliotecas
@@ -9,6 +8,14 @@
 import { greetFromWasm, addFromWasm } from './wasm';
 
 import { loadStructure, FrameStructure } from './structure';
+import {
+  perspectiva,
+  identidad,
+  multiplica,
+  traslada,
+  rotaX,
+  rotaY,
+} from './math';
 
 
 /** Compila un shader de WebGL a partir de su código fuente. */
@@ -147,73 +154,10 @@ function init(): void {
     distancia += e.deltaY * 0.01;
   });
 
-  // Utilidades de matrices 4x4.
-  function perspectiva(fovy: number, aspect: number, near: number, far: number): Float32Array {
-    const f = 1.0 / Math.tan(fovy / 2);
-    const nf = 1 / (near - far);
-    const out = new Float32Array(16);
-    out[0] = f / aspect;
-    out[5] = f;
-    out[10] = (far + near) * nf;
-    out[11] = -1;
-    out[14] = (2 * far * near) * nf;
-    return out;
-  }
 
-  function identidad(): Float32Array {
-    const out = new Float32Array(16);
-    out[0] = out[5] = out[10] = out[15] = 1;
-    return out;
-  }
+  // Funciones de álgebra lineal importadas desde `math.ts` para mantener el
+  // punto de entrada enfocado en la lógica de renderizado.
 
-  function multiplica(a: Float32Array, b: Float32Array): Float32Array {
-    const out = new Float32Array(16);
-    for (let i = 0; i < 4; i++) {
-      const ai0 = a[i], ai1 = a[i + 4], ai2 = a[i + 8], ai3 = a[i + 12];
-      out[i]      = ai0 * b[0] + ai1 * b[1] + ai2 * b[2] + ai3 * b[3];
-      out[i + 4]  = ai0 * b[4] + ai1 * b[5] + ai2 * b[6] + ai3 * b[7];
-      out[i + 8]  = ai0 * b[8] + ai1 * b[9] + ai2 * b[10] + ai3 * b[11];
-      out[i + 12] = ai0 * b[12] + ai1 * b[13] + ai2 * b[14] + ai3 * b[15];
-    }
-    return out;
-  }
-
-  function traslada(m: Float32Array, v: [number, number, number]): Float32Array {
-    const out = m.slice(0);
-    out[12] = m[0] * v[0] + m[4] * v[1] + m[8]  * v[2] + m[12];
-    out[13] = m[1] * v[0] + m[5] * v[1] + m[9]  * v[2] + m[13];
-    out[14] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14];
-    out[15] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15];
-    return out;
-  }
-
-  function rotaX(m: Float32Array, rad: number): Float32Array {
-    const s = Math.sin(rad), c = Math.cos(rad);
-    const out = m.slice(0);
-    out[4] = m[4] * c + m[8] * s;
-    out[5] = m[5] * c + m[9] * s;
-    out[6] = m[6] * c + m[10] * s;
-    out[7] = m[7] * c + m[11] * s;
-    out[8] = m[8] * c - m[4] * s;
-    out[9] = m[9] * c - m[5] * s;
-    out[10] = m[10] * c - m[6] * s;
-    out[11] = m[11] * c - m[7] * s;
-    return out;
-  }
-
-  function rotaY(m: Float32Array, rad: number): Float32Array {
-    const s = Math.sin(rad), c = Math.cos(rad);
-    const out = m.slice(0);
-    out[0] = m[0] * c - m[8] * s;
-    out[1] = m[1] * c - m[9] * s;
-    out[2] = m[2] * c - m[10] * s;
-    out[3] = m[3] * c - m[11] * s;
-    out[8] = m[0] * s + m[8] * c;
-    out[9] = m[1] * s + m[9] * c;
-    out[10] = m[2] * s + m[10] * c;
-    out[11] = m[3] * s + m[11] * c;
-    return out;
-  }
 
   // Bucle de renderizado.
   function render(): void {

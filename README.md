@@ -17,6 +17,11 @@ se describen nodos y aristas de forma modular para poder cargar o generar
 otras configuraciones en el futuro.
 
 
+Las transformaciones de matrices empleadas por WebGL se encuentran en
+`webapp/src/math.ts`, separando la lógica de álgebra lineal del punto de
+entrada `main.ts` para favorecer la claridad y la reutilización.
+
+
 - `webapp/`: interfaz web con Vite + TypeScript.
 - `rust-wasm/`: módulo Rust exportando funciones a WASM.
 
@@ -33,6 +38,7 @@ de conectividad.
 cd webapp
 npm install      # instala TypeScript y Vite
 npm test         # comprobación de tipos
+
 
 npm run dev
 ```
