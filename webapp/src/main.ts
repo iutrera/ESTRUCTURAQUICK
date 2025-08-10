@@ -11,7 +11,6 @@ import {
   computeBounds,
   StructureBounds,
 } from './structure';
-
 import { perspectiva, multiplica } from './math';
 import { OrbitCamera } from './camera';
 
@@ -115,8 +114,22 @@ function init(): void {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
+  // Crea un conjunto de ejes XYZ para orientar la escena.
+  const axisLength = bounds.radius * 1.5;
+  const axisVertices = new Float32Array([
+    0, 0, 0, axisLength, 0, 0, // Eje X en rojo
+    0, 0, 0, 0, axisLength, 0, // Eje Y en verde
+    0, 0, 0, 0, 0, axisLength, // Eje Z en azul
+  ]);
+  const axisBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, axisBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, axisVertices, gl.STATIC_DRAW);
+
   const posLoc = gl.getAttribLocation(program, 'position');
   gl.enableVertexAttribArray(posLoc);
+  // Restablece el búfer de vértices principal tras preparar los ejes.
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
   gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
 
   const colorLoc = gl.getUniformLocation(program, 'uColor');
@@ -128,27 +141,36 @@ function init(): void {
   // Control de cámara orbital para rotación, desplazamiento y zoom.
   // La distancia inicial se calcula a partir del tamaño de la estructura.
   const camera = new OrbitCamera(bounds.radius * 2);
-
   camera.attach(canvas);
 
   // Bucle de renderizado.
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
     const proy = perspectiva(
       Math.PI / 4,
       canvas.width / canvas.height,
       0.1,
       bounds.radius * 10
     );
-
     const modelo = camera.getModelMatrix();
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
-
     gl.uniformMatrix4fv(mvpLoc, false, mvp);
+    // Dibuja los ejes de referencia.
+    gl.bindBuffer(gl.ARRAY_BUFFER, axisBuffer);
+    gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
+    gl.uniform3f(colorLoc, 1.0, 0.0, 0.0); // X en rojo
+    gl.drawArrays(gl.LINES, 0, 2);
+    gl.uniform3f(colorLoc, 0.0, 1.0, 0.0); // Y en verde
+    gl.drawArrays(gl.LINES, 2, 2);
+    gl.uniform3f(colorLoc, 0.0, 0.0, 1.0); // Z en azul
+    gl.drawArrays(gl.LINES, 4, 2);
 
     // Dibuja las aristas como segmentos azules.
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
     gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
     gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
 

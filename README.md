@@ -16,10 +16,12 @@ La geometría de la estructura se describe en `webapp/src/structure.json` y se
 importa mediante el módulo `webapp/src/structure.ts`. Modificando el JSON se
 pueden cargar marcos distintos sin tocar el motor de renderizado.
 
-
 Al cargarse, la aplicación calcula el centro y el tamaño de la estructura para
 encuadrarla automáticamente. La cámara orbital se inicializa a una distancia
 adecuada, lo que evita ajustes manuales cuando se sustituyen los datos.
+
+Se añaden ejes de referencia en los colores estándar (X rojo, Y verde, Z azul)
+que ayudan a orientar al usuario dentro de la escena 3D.
 
 Las transformaciones de matrices empleadas por WebGL se encuentran en
 `webapp/src/math.ts`, separando la lógica de álgebra lineal del punto de
