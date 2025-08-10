@@ -13,6 +13,7 @@ export class OrbitCamera {
   private rotX = 0;
   private rotY = 0;
   private distance: number;
+
   private readonly initialDistance: number;
   private dragging = false;
   private button = 0;
@@ -28,6 +29,7 @@ export class OrbitCamera {
   constructor(distance = 5) {
     this.distance = distance;
     this.initialDistance = distance;
+
   }
 
   /**
