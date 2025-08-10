@@ -106,6 +106,7 @@ function init(): void {
   const vertices = new Float32Array(centeredNodes.flat());
   const indices = new Uint16Array(estructura.edges.flat());
   const nodeCount = estructura.nodes.length; // cantidad de nodos para dibujar
+
   const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
@@ -141,9 +142,18 @@ function init(): void {
   // La distancia inicial se calcula a partir del tamaño de la estructura.
   const camera = new OrbitCamera(bounds.radius * 2);
   camera.attach(canvas);
-  // Permite restablecer la vista presionando la tecla 'r'.
+  // Permite restablecer la vista presionando la tecla 'r' y alternar
+  // la visualización de aristas y nodos con 'e' y 'n' respectivamente.
+  let showEdges = true;
+  let showNodes = true;
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'r') camera.reset();
+    if (e.key === 'r') {
+      camera.reset();
+    } else if (e.key === 'e') {
+      showEdges = !showEdges;
+    } else if (e.key === 'n') {
+      showNodes = !showNodes;
+    }
   });
 
 
@@ -161,6 +171,7 @@ function init(): void {
     const modelo = camera.getModelMatrix();
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
+
     gl.uniformMatrix4fv(mvpLoc, false, mvp);
 
     // Dibuja los ejes de referencia.
@@ -173,15 +184,20 @@ function init(): void {
     gl.uniform3f(colorLoc, 0.0, 0.0, 1.0); // Z en azul
     gl.drawArrays(gl.LINES, 4, 2);
 
-    // Dibuja las aristas como segmentos azules.
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
-    gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
-    gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
+    if (showEdges) {
+      // Dibuja las aristas como segmentos azules.
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
+      gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
+      gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
+    }
 
-    // Dibuja los nodos como puntos rojos.
-    gl.uniform3f(colorLoc, 0.8, 0.1, 0.1);
-    gl.drawArrays(gl.POINTS, 0, nodeCount);
+    if (showNodes) {
+      // Dibuja los nodos como puntos rojos.
+      gl.uniform3f(colorLoc, 0.8, 0.1, 0.1);
+      gl.drawArrays(gl.POINTS, 0, nodeCount);
+    }
+
 
     requestAnimationFrame(render);
   }

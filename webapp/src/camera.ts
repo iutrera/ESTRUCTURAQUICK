@@ -29,7 +29,6 @@ export class OrbitCamera {
   constructor(distance = 5) {
     this.distance = distance;
     this.initialDistance = distance;
-
   }
 
   /**
