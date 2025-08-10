@@ -22,6 +22,11 @@ Las transformaciones de matrices empleadas por WebGL se encuentran en
 entrada `main.ts` para favorecer la claridad y la reutilización.
 
 
+El control de cámara (rotación y zoom con el ratón) se implementa en
+`webapp/src/camera.ts`, manteniendo el archivo `main.ts` enfocado únicamente
+en el ciclo de renderizado y la gestión de WebGL.
+
+
 - `webapp/`: interfaz web con Vite + TypeScript.
 - `rust-wasm/`: módulo Rust exportando funciones a WASM.
 

@@ -8,14 +8,8 @@
 import { greetFromWasm, addFromWasm } from './wasm';
 
 import { loadStructure, FrameStructure } from './structure';
-import {
-  perspectiva,
-  identidad,
-  multiplica,
-  traslada,
-  rotaX,
-  rotaY,
-} from './math';
+import { perspectiva, multiplica } from './math';
+import { OrbitCamera } from './camera';
 
 
 /** Compila un shader de WebGL a partir de su código fuente. */
@@ -125,38 +119,9 @@ function init(): void {
   const mvpLoc = gl.getUniformLocation(program, 'mvp');
   gl.enable(gl.DEPTH_TEST);
 
-  // Estado para la interacción.
-  let rotX = 0;
-  let rotY = 0;
-  let distancia = 5;
-  let arrastrando = false;
-  const ultimo = { x: 0, y: 0 };
-
-  canvas.addEventListener('mousedown', (e: MouseEvent) => {
-    arrastrando = true;
-    ultimo.x = e.clientX;
-    ultimo.y = e.clientY;
-  });
-  window.addEventListener('mouseup', () => {
-    arrastrando = false;
-  });
-  canvas.addEventListener('mousemove', (e: MouseEvent) => {
-    if (!arrastrando) return;
-    const dx = e.clientX - ultimo.x;
-    const dy = e.clientY - ultimo.y;
-    rotY += dx * 0.01;
-    rotX += dy * 0.01;
-    ultimo.x = e.clientX;
-    ultimo.y = e.clientY;
-  });
-  canvas.addEventListener('wheel', (e: WheelEvent) => {
-    e.preventDefault();
-    distancia += e.deltaY * 0.01;
-  });
-
-
-  // Funciones de álgebra lineal importadas desde `math.ts` para mantener el
-  // punto de entrada enfocado en la lógica de renderizado.
+  // Control de cámara orbital para rotación y zoom.
+  const camera = new OrbitCamera();
+  camera.attach(canvas);
 
 
   // Bucle de renderizado.
@@ -165,15 +130,12 @@ function init(): void {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const proy = perspectiva(Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
-    let modelo = identidad();
-    modelo = rotaX(modelo, rotX);
-    modelo = rotaY(modelo, rotY);
-    let vista = identidad();
-    vista = traslada(vista, [0, 0, -distancia]);
+
+    const modelo = camera.getModelMatrix();
+    const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
 
     gl.uniformMatrix4fv(mvpLoc, false, mvp);
-
     gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
 
 
