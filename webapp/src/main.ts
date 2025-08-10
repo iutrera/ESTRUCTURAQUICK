@@ -106,7 +106,6 @@ function init(): void {
   const vertices = new Float32Array(centeredNodes.flat());
   const indices = new Uint16Array(estructura.edges.flat());
   const nodeCount = estructura.nodes.length; // cantidad de nodos para dibujar
-
   const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
@@ -130,6 +129,7 @@ function init(): void {
   gl.enableVertexAttribArray(posLoc);
   // Restablece el búfer de vértices principal tras preparar los ejes.
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
   gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
 
   const colorLoc = gl.getUniformLocation(program, 'uColor');
@@ -157,9 +157,7 @@ function init(): void {
     const modelo = camera.getModelMatrix();
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
-
     gl.uniformMatrix4fv(mvpLoc, false, mvp);
-
     // Dibuja los ejes de referencia.
     gl.bindBuffer(gl.ARRAY_BUFFER, axisBuffer);
     gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
