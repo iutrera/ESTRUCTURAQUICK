@@ -4,7 +4,6 @@ Subida inicial de ficheros.
 
 ## Webapp
 
-
 Se incorpora una demostración de aplicación web basada en TypeScript y WebGL
 puro. El código representa una estructura en forma de marco cúbico mediante
 segmentos de línea complementados con puntos para marcar los nodos. La escena
@@ -16,6 +15,11 @@ de suma numérica.
 La geometría de la estructura se describe en `webapp/src/structure.json` y se
 importa mediante el módulo `webapp/src/structure.ts`. Modificando el JSON se
 pueden cargar marcos distintos sin tocar el motor de renderizado.
+
+
+Al cargarse, la aplicación calcula el centro y el tamaño de la estructura para
+encuadrarla automáticamente. La cámara orbital se inicializa a una distancia
+adecuada, lo que evita ajustes manuales cuando se sustituyen los datos.
 
 Las transformaciones de matrices empleadas por WebGL se encuentran en
 `webapp/src/math.ts`, separando la lógica de álgebra lineal del punto de
@@ -46,5 +50,4 @@ npm run dev
 cd rust-wasm
 cargo test
 cargo build --target wasm32-unknown-unknown
-
 ```

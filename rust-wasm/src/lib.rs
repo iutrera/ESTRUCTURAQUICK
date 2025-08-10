@@ -36,7 +36,6 @@ pub fn add(a: f64, b: f64) -> f64 {
 mod tests {
     use super::*;
 
-
     /// Verifies that the `greet` function formats the name correctly.
     #[test]
     fn greets_person() {

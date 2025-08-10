@@ -5,7 +5,13 @@
  * como demostración de visualización 3D de alto rendimiento.
  */
 import { greetFromWasm, addFromWasm } from './wasm';
-import { loadStructure, FrameStructure } from './structure';
+import {
+  loadStructure,
+  FrameStructure,
+  computeBounds,
+  StructureBounds,
+} from './structure';
+
 import { perspectiva, multiplica } from './math';
 import { OrbitCamera } from './camera';
 
@@ -88,7 +94,17 @@ function init(): void {
 
   // Obtiene la estructura a visualizar (nodos y aristas).
   const estructura: FrameStructure = loadStructure();
-  const vertices = new Float32Array(estructura.nodes.flat());
+
+  // Analiza su volumen para centrarla en el origen y ajustar la cámara.
+  const bounds: StructureBounds = computeBounds(estructura);
+  const centeredNodes = estructura.nodes.map((n) => [
+    n[0] - bounds.center[0],
+    n[1] - bounds.center[1],
+    n[2] - bounds.center[2],
+  ]);
+
+  // Transforma los nodos centrados en un arreglo contiguo de floats.
+  const vertices = new Float32Array(centeredNodes.flat());
   const indices = new Uint16Array(estructura.edges.flat());
   const nodeCount = estructura.nodes.length; // cantidad de nodos para dibujar
   const vertexBuffer = gl.createBuffer();
@@ -110,15 +126,22 @@ function init(): void {
   gl.enable(gl.DEPTH_TEST);
 
   // Control de cámara orbital para rotación, desplazamiento y zoom.
-  const camera = new OrbitCamera();
+  // La distancia inicial se calcula a partir del tamaño de la estructura.
+  const camera = new OrbitCamera(bounds.radius * 2);
+
   camera.attach(canvas);
 
   // Bucle de renderizado.
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    const proy = perspectiva(
+      Math.PI / 4,
+      canvas.width / canvas.height,
+      0.1,
+      bounds.radius * 10
+    );
 
-    const proy = perspectiva(Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
     const modelo = camera.getModelMatrix();
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
