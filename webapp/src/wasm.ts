@@ -1,9 +1,13 @@
 
+
 /**
  * Helper functions for interacting with the Rust-compiled WebAssembly module.
  * The WASM module exposes a simple `greet` function used here as proof of
  * concept for TypeScript ↔ WASM integration.
  */
+
+// @ts-ignore: módulo generado por wasm-bindgen
+
 import init, { greet } from '../../rust-wasm/pkg/representatodo_wasm';
 
 /**
