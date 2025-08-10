@@ -17,6 +17,7 @@ export interface FrameStructure {
   edges: Edge[];
 }
 
+
 /** Datos de la estructura cargados desde un archivo JSON. */
 import structureData from './structure.json';
 
@@ -27,4 +28,5 @@ import structureData from './structure.json';
  */
 export function loadStructure(): FrameStructure {
   return structureData as FrameStructure;
+
 }

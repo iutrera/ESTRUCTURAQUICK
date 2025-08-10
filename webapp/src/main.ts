@@ -91,7 +91,6 @@ function init(): void {
   const vertices = new Float32Array(estructura.nodes.flat());
   const indices = new Uint16Array(estructura.edges.flat());
   const nodeCount = estructura.nodes.length; // cantidad de nodos para dibujar
-
   const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
