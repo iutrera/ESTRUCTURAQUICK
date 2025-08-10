@@ -1,3 +1,4 @@
+
 /**
  * Punto de entrada de la aplicación web. Utiliza WebGL puro para renderizar
  * un cubo interactivo sin depender de bibliotecas externas. El cubo puede
@@ -246,4 +247,5 @@ function init(): void {
 }
 
 // Inicializa la escena al cargar el módulo.
+
 init();
