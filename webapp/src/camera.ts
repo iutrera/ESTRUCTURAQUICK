@@ -13,6 +13,8 @@ export class OrbitCamera {
   private rotX = 0;
   private rotY = 0;
   private distance: number;
+
+  private readonly initialDistance: number;
   private dragging = false;
   private button = 0;
   private last = { x: 0, y: 0 };
@@ -26,6 +28,8 @@ export class OrbitCamera {
    */
   constructor(distance = 5) {
     this.distance = distance;
+    this.initialDistance = distance;
+
   }
 
   /**
@@ -64,6 +68,18 @@ export class OrbitCamera {
       this.distance += e.deltaY * 0.01;
       if (this.distance < 0.1) this.distance = 0.1;
     });
+  }
+
+  /**
+   * Restablece la cámara a su estado inicial, eliminando rotaciones,
+   * desplazamientos y zoom acumulados.
+   */
+  reset(): void {
+    this.rotX = 0;
+    this.rotY = 0;
+    this.offsetX = 0;
+    this.offsetY = 0;
+    this.distance = this.initialDistance;
   }
 
   /** Devuelve la matriz de vista calculada a partir del estado actual. */

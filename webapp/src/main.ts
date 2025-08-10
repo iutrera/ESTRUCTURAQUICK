@@ -129,7 +129,6 @@ function init(): void {
   gl.enableVertexAttribArray(posLoc);
   // Restablece el búfer de vértices principal tras preparar los ejes.
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
   gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
 
   const colorLoc = gl.getUniformLocation(program, 'uColor');
@@ -142,6 +141,11 @@ function init(): void {
   // La distancia inicial se calcula a partir del tamaño de la estructura.
   const camera = new OrbitCamera(bounds.radius * 2);
   camera.attach(canvas);
+  // Permite restablecer la vista presionando la tecla 'r'.
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'r') camera.reset();
+  });
+
 
   // Bucle de renderizado.
   function render(): void {
@@ -158,6 +162,7 @@ function init(): void {
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
     gl.uniformMatrix4fv(mvpLoc, false, mvp);
+
     // Dibuja los ejes de referencia.
     gl.bindBuffer(gl.ARRAY_BUFFER, axisBuffer);
     gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
