@@ -1,4 +1,5 @@
 
+
 /**
  * Punto de entrada de la aplicación web. Utiliza WebGL puro para renderizar
  * un marco estructural cúbico interactivo sin depender de bibliotecas
@@ -6,6 +7,8 @@
  * como demostración de visualización 3D de alto rendimiento.
  */
 import { greetFromWasm, addFromWasm } from './wasm';
+
+import { loadStructure, FrameStructure } from './structure';
 
 
 /** Compila un shader de WebGL a partir de su código fuente. */
@@ -89,25 +92,10 @@ function init(): void {
   gl.useProgram(program);
 
 
-  // Structural nodes and edges forming a cube frame.
-  const nodes = [
-    [-1, -1, -1],
-    [1, -1, -1],
-    [1, 1, -1],
-    [-1, 1, -1],
-    [-1, -1, 1],
-    [1, -1, 1],
-    [1, 1, 1],
-    [-1, 1, 1]
-  ];
-  const edges = [
-    [0, 1], [1, 2], [2, 3], [3, 0],
-    [4, 5], [5, 6], [6, 7], [7, 4],
-    [0, 4], [1, 5], [2, 6], [3, 7]
-  ];
-
-  const vertices = new Float32Array(nodes.flat());
-  const indices = new Uint16Array(edges.flat());
+  // Obtiene la estructura a visualizar (nodos y aristas).
+  const estructura: FrameStructure = loadStructure();
+  const vertices = new Float32Array(estructura.nodes.flat());
+  const indices = new Uint16Array(estructura.edges.flat());
 
 
   const vertexBuffer = gl.createBuffer();
@@ -251,7 +239,6 @@ function init(): void {
   greetFromWasm('ingeniero').then((msg) => console.log(msg));
 
   addFromWasm(2, 3).then((sum) => console.log('2 + 3 =', sum));
-
   render();
 }
 

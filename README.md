@@ -12,6 +12,11 @@ muestra cómo invocar funciones de alto rendimiento escritas en Rust y
 compiladas a WebAssembly, incluyendo un ejemplo de suma numérica.
 
 
+La geometría de la estructura se define en `webapp/src/structure.ts`, donde
+se describen nodos y aristas de forma modular para poder cargar o generar
+otras configuraciones en el futuro.
+
+
 - `webapp/`: interfaz web con Vite + TypeScript.
 - `rust-wasm/`: módulo Rust exportando funciones a WASM.
 
