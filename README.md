@@ -7,9 +7,10 @@ Subida inicial de ficheros.
 
 Se incorpora una demostración de aplicación web basada en TypeScript y WebGL
 puro. El código representa una estructura en forma de marco cúbico mediante
-segmentos de línea que pueden rotarse y hacer zoom con el ratón. Además
-muestra cómo invocar funciones de alto rendimiento escritas en Rust y
-compiladas a WebAssembly, incluyendo un ejemplo de suma numérica.
+segmentos de línea complementados con puntos para marcar los nodos. La escena
+puede rotarse y hacer zoom con el ratón, ofreciendo una visualización 3D
+fluida. Además muestra cómo invocar funciones de alto rendimiento escritas en
+Rust y compiladas a WebAssembly, incluyendo un ejemplo de suma numérica.
 
 
 La geometría de la estructura se define en `webapp/src/structure.ts`, donde
@@ -30,7 +31,6 @@ en el ciclo de renderizado y la gestión de WebGL.
 - `webapp/`: interfaz web con Vite + TypeScript.
 - `rust-wasm/`: módulo Rust exportando funciones a WASM.
 
-
 El módulo Rust no depende de crates externos para que las pruebas puedan
 ejecutarse incluso sin acceso a internet. Para crear un paquete WebAssembly
 
@@ -43,7 +43,6 @@ de conectividad.
 cd webapp
 npm install      # instala TypeScript y Vite
 npm test         # comprobación de tipos
-
 
 npm run dev
 ```

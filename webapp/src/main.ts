@@ -68,7 +68,9 @@ function init(): void {
   window.addEventListener('resize', resize);
   resize();
 
-  // Shaders para colorear cada vértice del cubo.
+
+  // Shaders para colorear y dimensionar los elementos de la estructura.
+
   const program = createProgram(
     gl,
     `
@@ -76,8 +78,9 @@ function init(): void {
 
     uniform mat4 mvp;
     void main() {
-
       gl_Position = mvp * vec4(position, 1.0);
+      gl_PointSize = 6.0; // Tamaño de los nodos renderizados como puntos
+
     }
     `,
     `
@@ -97,6 +100,8 @@ function init(): void {
   const estructura: FrameStructure = loadStructure();
   const vertices = new Float32Array(estructura.nodes.flat());
   const indices = new Uint16Array(estructura.edges.flat());
+
+  const nodeCount = estructura.nodes.length; // cantidad de nodos para dibujar
 
 
   const vertexBuffer = gl.createBuffer();
@@ -136,7 +141,15 @@ function init(): void {
     const mvp = multiplica(proy, multiplica(vista, modelo));
 
     gl.uniformMatrix4fv(mvpLoc, false, mvp);
+
+
+    // Dibuja las aristas como segmentos azules.
+    gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
     gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+    // Dibuja los nodos como puntos rojos.
+    gl.uniform3f(colorLoc, 0.8, 0.1, 0.1);
+    gl.drawArrays(gl.POINTS, 0, nodeCount);
 
 
     requestAnimationFrame(render);
