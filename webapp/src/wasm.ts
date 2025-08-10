@@ -1,3 +1,4 @@
+
 /**
  * Helper functions for interacting with the Rust-compiled WebAssembly module.
  * The WASM module exposes a simple `greet` function used here as proof of
@@ -11,6 +12,7 @@ import init, { greet } from '../../rust-wasm/pkg/representatodo_wasm';
  * @param name - Name to include in the greeting message.
  * @returns Personalized greeting returned by the WASM module.
  */
+
 export async function greetFromWasm(name: string): Promise<string> {
   await init();
   return greet(name);

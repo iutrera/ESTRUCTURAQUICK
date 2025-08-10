@@ -1,3 +1,4 @@
+
 /**
  * Entry point for the web application. Creates a Three.js scene
  * with a rotating cube and simple mouse-based interaction
@@ -77,11 +78,14 @@ function init(): void {
   // Continuously render the scene and update any animations.
   function animate(): void {
     requestAnimationFrame(animate);
+
     renderer.render(scene, camera);
   }
 
   animate();
 }
 
+
 // Initialize the scene once the module has been loaded.
+
 init();
