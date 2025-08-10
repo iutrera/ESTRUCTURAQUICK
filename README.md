@@ -6,9 +6,10 @@ Subida inicial de ficheros.
 
 
 Se incorpora una demostración de aplicación web basada en TypeScript y WebGL
-puro. El código renderiza un cubo 3D interactivo que puede rotarse y hacer
-zoom con el ratón, y muestra cómo invocar funciones de alto rendimiento
-escritas en Rust y compiladas a WebAssembly.
+puro. El código representa una estructura en forma de marco cúbico mediante
+segmentos de línea que pueden rotarse y hacer zoom con el ratón. Además
+muestra cómo invocar funciones de alto rendimiento escritas en Rust y
+compiladas a WebAssembly, incluyendo un ejemplo de suma numérica.
 
 
 - `webapp/`: interfaz web con Vite + TypeScript.
@@ -16,7 +17,8 @@ escritas en Rust y compiladas a WebAssembly.
 
 
 El módulo Rust no depende de crates externos para que las pruebas puedan
- ejecutarse incluso sin acceso a internet. Para crear un paquete WebAssembly
+ejecutarse incluso sin acceso a internet. Para crear un paquete WebAssembly
+
 real se deberá añadir `wasm-bindgen` y otras dependencias cuando se disponga
 de conectividad.
 

@@ -5,5 +5,7 @@
  */
 declare module '../../rust-wasm/pkg/representatodo_wasm' {
   export function greet(name: string): string;
+
+  export function add(a: number, b: number): number;
 }
 

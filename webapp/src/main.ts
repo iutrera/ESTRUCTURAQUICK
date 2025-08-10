@@ -1,11 +1,12 @@
 
 /**
  * Punto de entrada de la aplicación web. Utiliza WebGL puro para renderizar
- * un cubo interactivo sin depender de bibliotecas externas. El cubo puede
- * rotarse y hacer zoom con el ratón, sirviendo como demostración de
- * visualización 3D de alto rendimiento.
+ * un marco estructural cúbico interactivo sin depender de bibliotecas
+ * externas. La estructura puede rotarse y hacer zoom con el ratón, sirviendo
+ * como demostración de visualización 3D de alto rendimiento.
  */
-import { greetFromWasm } from './wasm';
+import { greetFromWasm, addFromWasm } from './wasm';
+
 
 /** Compila un shader de WebGL a partir de su código fuente. */
 function compileShader(
@@ -68,45 +69,46 @@ function init(): void {
     gl,
     `
     attribute vec3 position;
-    attribute vec3 color;
+
     uniform mat4 mvp;
-    varying vec3 vColor;
     void main() {
-      vColor = color;
+
       gl_Position = mvp * vec4(position, 1.0);
     }
     `,
     `
     precision mediump float;
-    varying vec3 vColor;
+
+    uniform vec3 uColor;
     void main() {
-      gl_FragColor = vec4(vColor, 1.0);
+      gl_FragColor = vec4(uColor, 1.0);
+
     }
     `
   );
   gl.useProgram(program);
 
-  // Datos de vértices: posición (xyz) + color (rgb).
-  const vertices = new Float32Array([
-    // Cara frontal
-    -1, -1,  1, 1, 0, 0,
-     1, -1,  1, 0, 1, 0,
-     1,  1,  1, 0, 0, 1,
-    -1,  1,  1, 1, 1, 0,
-    // Cara trasera
-    -1, -1, -1, 1, 0, 1,
-     1, -1, -1, 0, 1, 1,
-     1,  1, -1, 1, 1, 1,
-    -1,  1, -1, 0, 0, 0
-  ]);
-  const indices = new Uint16Array([
-    0, 1, 2, 0, 2, 3,
-    1, 5, 6, 1, 6, 2,
-    5, 4, 7, 5, 7, 6,
-    4, 0, 3, 4, 3, 7,
-    3, 2, 6, 3, 6, 7,
-    4, 5, 1, 4, 1, 0
-  ]);
+
+  // Structural nodes and edges forming a cube frame.
+  const nodes = [
+    [-1, -1, -1],
+    [1, -1, -1],
+    [1, 1, -1],
+    [-1, 1, -1],
+    [-1, -1, 1],
+    [1, -1, 1],
+    [1, 1, 1],
+    [-1, 1, 1]
+  ];
+  const edges = [
+    [0, 1], [1, 2], [2, 3], [3, 0],
+    [4, 5], [5, 6], [6, 7], [7, 4],
+    [0, 4], [1, 5], [2, 6], [3, 7]
+  ];
+
+  const vertices = new Float32Array(nodes.flat());
+  const indices = new Uint16Array(edges.flat());
+
 
   const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -117,11 +119,13 @@ function init(): void {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
   const posLoc = gl.getAttribLocation(program, 'position');
-  const colorLoc = gl.getAttribLocation(program, 'color');
+
   gl.enableVertexAttribArray(posLoc);
-  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 24, 0);
-  gl.enableVertexAttribArray(colorLoc);
-  gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 24, 12);
+  gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
+
+  const colorLoc = gl.getUniformLocation(program, 'uColor');
+  gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
+
 
   const mvpLoc = gl.getUniformLocation(program, 'mvp');
   gl.enable(gl.DEPTH_TEST);
@@ -237,12 +241,17 @@ function init(): void {
     const mvp = multiplica(proy, multiplica(vista, modelo));
 
     gl.uniformMatrix4fv(mvpLoc, false, mvp);
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+    gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
+
 
     requestAnimationFrame(render);
   }
 
   greetFromWasm('ingeniero').then((msg) => console.log(msg));
+
+  addFromWasm(2, 3).then((sum) => console.log('2 + 3 =', sum));
+
   render();
 }
 
