@@ -156,6 +156,7 @@ function init(): void {
     }
   });
 
+
   // Bucle de renderizado.
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
@@ -196,6 +197,7 @@ function init(): void {
       gl.uniform3f(colorLoc, 0.8, 0.1, 0.1);
       gl.drawArrays(gl.POINTS, 0, nodeCount);
     }
+
 
     requestAnimationFrame(render);
   }
