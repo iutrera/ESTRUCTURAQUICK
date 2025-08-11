@@ -9,10 +9,10 @@ puro. El código representa una estructura en forma de marco cúbico mediante
 segmentos de línea complementados con puntos para marcar los nodos. La escena
 puede rotarse, desplazarse y hacer zoom con el ratón, restablecer la vista con
 la tecla **R**, alternar la visibilidad de aristas y nodos con **E** y **N**, y
-cambiar entre proyección en perspectiva u ortográfica con **P**, ofreciendo una
-visualización 3D fluida. Además muestra cómo invocar funciones de alto
-rendimiento escritas en Rust y compiladas a WebAssembly, incluyendo un ejemplo
-de suma numérica.
+cambiar entre proyección en perspectiva u ortográfica con **P**, y ajustar el
+tamaño de los nodos con **+** y **-**, ofreciendo una visualización 3D fluida.
+Además muestra cómo invocar funciones de alto rendimiento escritas en Rust y
+compiladas a WebAssembly, incluyendo un ejemplo de suma numérica.
 
 
 La geometría de la estructura se describe en `webapp/src/structure.json` y se
@@ -56,3 +56,14 @@ cd rust-wasm
 cargo test
 cargo build --target wasm32-unknown-unknown
 ```
+
+### Ejecución desde Visual Studio Code
+
+1. Abre el directorio del proyecto en VS Code.
+2. Presiona `Ctrl+Shift+B` y elige la tarea **npm: dev** para iniciar el servidor
+   de desarrollo.
+3. Con `F5` se lanza la configuración **Launch Webapp** que abre
+   `http://localhost:5173` en el navegador predeterminado.
+4. Desde el terminal integrado puedes ejecutar `cargo test` para validar el
+   módulo Rust.
+

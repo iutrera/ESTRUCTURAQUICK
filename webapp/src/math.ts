@@ -31,7 +31,6 @@ export function perspectiva(
 }
 
 /**
-
  * Crea una matriz de proyección ortográfica.
  *
  * @param left   Coordenada del plano izquierdo de recorte.
@@ -65,7 +64,6 @@ export function ortografica(
 }
 
 /**
-
  * Devuelve una matriz identidad 4x4.
  */
 export function identidad(): Float32Array {

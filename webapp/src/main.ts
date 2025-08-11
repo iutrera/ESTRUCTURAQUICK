@@ -76,9 +76,11 @@ function init(): void {
     `
     attribute vec3 position;
     uniform mat4 mvp;
+
+    uniform float uPointSize;
     void main() {
       gl_Position = mvp * vec4(position, 1.0);
-      gl_PointSize = 6.0; // Tamaño de los nodos renderizados como puntos
+      gl_PointSize = uPointSize; // Tamaño de los nodos renderizados como puntos
     }
     `,
     `
@@ -133,6 +135,8 @@ function init(): void {
   gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
 
   const colorLoc = gl.getUniformLocation(program, 'uColor');
+  const pointSizeLoc = gl.getUniformLocation(program, 'uPointSize');
+
   gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
 
   const mvpLoc = gl.getUniformLocation(program, 'mvp');
@@ -148,7 +152,7 @@ function init(): void {
   let showEdges = true;
   let showNodes = true;
   let useOrtho = false;
-
+  let pointSize = 6.0;
   window.addEventListener('keydown', (e) => {
     if (e.key === 'r') {
       camera.reset();
@@ -158,6 +162,10 @@ function init(): void {
       showNodes = !showNodes;
     } else if (e.key === 'p') {
       useOrtho = !useOrtho;
+    } else if (e.key === '+' || e.key === '=') {
+      pointSize = Math.min(pointSize + 1, 20);
+    } else if (e.key === '-') {
+      pointSize = Math.max(pointSize - 1, 1);
     }
   });
 
@@ -179,7 +187,6 @@ function init(): void {
           size * 10
         )
       : perspectiva(Math.PI / 4, aspect, 0.1, size * 10);
-
     const modelo = camera.getModelMatrix();
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
@@ -205,8 +212,10 @@ function init(): void {
     }
 
     if (showNodes) {
-      // Dibuja los nodos como puntos rojos.
+      // Dibuja los nodos como puntos rojos con tamaño ajustable.
       gl.uniform3f(colorLoc, 0.8, 0.1, 0.1);
+      gl.uniform1f(pointSizeLoc, pointSize);
+
       gl.drawArrays(gl.POINTS, 0, nodeCount);
     }
 
