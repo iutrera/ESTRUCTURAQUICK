@@ -5,12 +5,8 @@
  * como demostración de visualización 3D de alto rendimiento.
  */
 import { greetFromWasm, addFromWasm } from './wasm';
-import {
-  loadStructure,
-  FrameStructure,
-  computeBounds,
-  StructureBounds,
-} from './structure';
+import { loadStructure, computeBounds, StructureBounds } from './structure';
+import { FrameStructure } from './types';
 import { perspectiva, ortografica, multiplica } from './math';
 import { OrbitCamera } from './camera';
 
@@ -52,8 +48,8 @@ function createProgram(
   }
   return program;
 }
+async function init(): Promise<void> {
 
-function init(): void {
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
   const gl = canvas.getContext('webgl') as WebGLRenderingContext;
@@ -76,7 +72,6 @@ function init(): void {
     `
     attribute vec3 position;
     uniform mat4 mvp;
-
     uniform float uPointSize;
     void main() {
       gl_Position = mvp * vec4(position, 1.0);
@@ -94,8 +89,7 @@ function init(): void {
   gl.useProgram(program);
 
   // Obtiene la estructura a visualizar (nodos y aristas).
-  const estructura: FrameStructure = loadStructure();
-
+  const estructura: FrameStructure = await loadStructure();
   // Analiza su volumen para centrarla en el origen y ajustar la cámara.
   const bounds: StructureBounds = computeBounds(estructura);
   const centeredNodes = estructura.nodes.map((n) => [
@@ -136,9 +130,7 @@ function init(): void {
 
   const colorLoc = gl.getUniformLocation(program, 'uColor');
   const pointSizeLoc = gl.getUniformLocation(program, 'uPointSize');
-
   gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
-
   const mvpLoc = gl.getUniformLocation(program, 'mvp');
   gl.enable(gl.DEPTH_TEST);
 
@@ -168,8 +160,6 @@ function init(): void {
       pointSize = Math.max(pointSize - 1, 1);
     }
   });
-
-
   // Bucle de renderizado.
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
@@ -215,7 +205,6 @@ function init(): void {
       // Dibuja los nodos como puntos rojos con tamaño ajustable.
       gl.uniform3f(colorLoc, 0.8, 0.1, 0.1);
       gl.uniform1f(pointSizeLoc, pointSize);
-
       gl.drawArrays(gl.POINTS, 0, nodeCount);
     }
 

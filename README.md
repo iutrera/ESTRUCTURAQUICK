@@ -15,10 +15,12 @@ Además muestra cómo invocar funciones de alto rendimiento escritas en Rust y
 compiladas a WebAssembly, incluyendo un ejemplo de suma numérica.
 
 
-La geometría de la estructura se describe en `webapp/src/structure.json` y se
-importa mediante el módulo `webapp/src/structure.ts`. Modificando el JSON se
-pueden cargar marcos distintos sin tocar el motor de renderizado.
-
+La geometría de la estructura se genera leyendo los CSV
+`webapp/src/nodos_esquinas_simbolico.csv` y
+`webapp/src/member_connections.csv`, al igual que hace el script
+`representatodo.py`. Estos datos se procesan en tiempo de carga por el módulo
+`webapp/src/structure.ts`, por lo que basta con editar los ficheros CSV para
+representar marcos diferentes sin modificar el código.
 Al cargarse, la aplicación calcula el centro y el tamaño de la estructura para
 encuadrarla automáticamente. La cámara orbital se inicializa a una distancia
 adecuada, lo que evita ajustes manuales cuando se sustituyen los datos.
@@ -66,4 +68,3 @@ cargo build --target wasm32-unknown-unknown
    `http://localhost:5173` en el navegador predeterminado.
 4. Desde el terminal integrado puedes ejecutar `cargo test` para validar el
    módulo Rust.
-

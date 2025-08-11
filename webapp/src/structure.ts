@@ -1,24 +1,5 @@
-/**
- * Tipos y utilidades para describir una estructura en nodos y aristas.
- * Esta capa permite separar los datos del código de renderizado.
- */
-
-/** Coordenada tridimensional de un nodo. */
-export type Node = [number, number, number];
-
-/** Arista que conecta dos nodos referenciados por su índice. */
-export type Edge = [number, number];
-
-/**
- * Conjunto completo de nodos y aristas que definen una estructura.
- */
-export interface FrameStructure {
-  nodes: Node[];
-  edges: Edge[];
-}
-
-/** Datos de la estructura cargados desde un archivo JSON. */
-import structureData from './structure.json';
+import { FrameStructure, Node } from './types';
+import { buildStructure } from './symbolic';
 
 /**
  * Resultados del análisis geométrico de una estructura.
@@ -31,12 +12,18 @@ export interface StructureBounds {
 }
 
 /**
- * Devuelve la estructura definida en `structure.json`.
- * Cambiando el contenido de dicho archivo pueden renderizarse
- * diferentes marcos sin modificar el código TypeScript.
+
+ * Devuelve la estructura definida en los ficheros CSV, replicando el
+ * comportamiento del script `representatodo.py`.
  */
-export function loadStructure(): FrameStructure {
-  return structureData as FrameStructure;
+export async function loadStructure(): Promise<FrameStructure> {
+  const nodesUrl = new URL('./nodos_esquinas_simbolico.csv', import.meta.url);
+  const beamsUrl = new URL('./member_connections.csv', import.meta.url);
+  const [nodesCsv, beamsCsv] = await Promise.all([
+    fetch(nodesUrl).then(r => r.text()),
+    fetch(beamsUrl).then(r => r.text()),
+  ]);
+  return buildStructure(nodesCsv, beamsCsv);
 }
 
 /**
