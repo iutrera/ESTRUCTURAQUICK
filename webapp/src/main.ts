@@ -11,7 +11,7 @@ import {
   computeBounds,
   StructureBounds,
 } from './structure';
-import { perspectiva, multiplica } from './math';
+import { perspectiva, ortografica, multiplica } from './math';
 import { OrbitCamera } from './camera';
 
 /** Compila un shader de WebGL a partir de su código fuente. */
@@ -142,10 +142,13 @@ function init(): void {
   // La distancia inicial se calcula a partir del tamaño de la estructura.
   const camera = new OrbitCamera(bounds.radius * 2);
   camera.attach(canvas);
-  // Permite restablecer la vista presionando la tecla 'r' y alternar
-  // la visualización de aristas y nodos con 'e' y 'n' respectivamente.
+  // Controles de teclado: 'r' restablece la vista, 'e' y 'n' alternan la
+  // visualización de aristas y nodos, y 'p' cambia entre proyección
+  // en perspectiva u ortográfica.
   let showEdges = true;
   let showNodes = true;
+  let useOrtho = false;
+
   window.addEventListener('keydown', (e) => {
     if (e.key === 'r') {
       camera.reset();
@@ -153,6 +156,8 @@ function init(): void {
       showEdges = !showEdges;
     } else if (e.key === 'n') {
       showNodes = !showNodes;
+    } else if (e.key === 'p') {
+      useOrtho = !useOrtho;
     }
   });
 
@@ -161,13 +166,20 @@ function init(): void {
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    const aspect = canvas.width / canvas.height;
+    const size = bounds.radius;
+    // Calcula la proyección en función del modo seleccionado.
+    const proy = useOrtho
+      ? ortografica(
+          -size * aspect,
+          size * aspect,
+          -size,
+          size,
+          0.1,
+          size * 10
+        )
+      : perspectiva(Math.PI / 4, aspect, 0.1, size * 10);
 
-    const proy = perspectiva(
-      Math.PI / 4,
-      canvas.width / canvas.height,
-      0.1,
-      bounds.radius * 10
-    );
     const modelo = camera.getModelMatrix();
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
@@ -197,7 +209,6 @@ function init(): void {
       gl.uniform3f(colorLoc, 0.8, 0.1, 0.1);
       gl.drawArrays(gl.POINTS, 0, nodeCount);
     }
-
 
     requestAnimationFrame(render);
   }

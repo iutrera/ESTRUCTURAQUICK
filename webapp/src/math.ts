@@ -31,6 +31,41 @@ export function perspectiva(
 }
 
 /**
+
+ * Crea una matriz de proyección ortográfica.
+ *
+ * @param left   Coordenada del plano izquierdo de recorte.
+ * @param right  Coordenada del plano derecho de recorte.
+ * @param bottom Coordenada del plano inferior de recorte.
+ * @param top    Coordenada del plano superior de recorte.
+ * @param near   Distancia al plano cercano de recorte.
+ * @param far    Distancia al plano lejano de recorte.
+ * @returns Matriz de proyección 4x4 como Float32Array.
+ */
+export function ortografica(
+  left: number,
+  right: number,
+  bottom: number,
+  top: number,
+  near: number,
+  far: number
+): Float32Array {
+  const lr = 1 / (left - right);
+  const bt = 1 / (bottom - top);
+  const nf = 1 / (near - far);
+  const out = new Float32Array(16);
+  out[0] = -2 * lr;
+  out[5] = -2 * bt;
+  out[10] = 2 * nf;
+  out[12] = (left + right) * lr;
+  out[13] = (top + bottom) * bt;
+  out[14] = (far + near) * nf;
+  out[15] = 1;
+  return out;
+}
+
+/**
+
  * Devuelve una matriz identidad 4x4.
  */
 export function identidad(): Float32Array {
