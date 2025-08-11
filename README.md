@@ -14,6 +14,7 @@ visualización 3D fluida. Además muestra cómo invocar funciones de alto
 rendimiento escritas en Rust y compiladas a WebAssembly, incluyendo un ejemplo
 de suma numérica.
 
+
 La geometría de la estructura se describe en `webapp/src/structure.json` y se
 importa mediante el módulo `webapp/src/structure.ts`. Modificando el JSON se
 pueden cargar marcos distintos sin tocar el motor de renderizado.

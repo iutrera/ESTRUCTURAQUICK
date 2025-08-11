@@ -148,6 +148,7 @@ function init(): void {
   let showEdges = true;
   let showNodes = true;
   let useOrtho = false;
+
   window.addEventListener('keydown', (e) => {
     if (e.key === 'r') {
       camera.reset();
@@ -160,11 +161,11 @@ function init(): void {
     }
   });
 
+
   // Bucle de renderizado.
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     const aspect = canvas.width / canvas.height;
     const size = bounds.radius;
     // Calcula la proyección en función del modo seleccionado.
@@ -178,6 +179,7 @@ function init(): void {
           size * 10
         )
       : perspectiva(Math.PI / 4, aspect, 0.1, size * 10);
+
     const modelo = camera.getModelMatrix();
     const vista = camera.getViewMatrix();
     const mvp = multiplica(proy, multiplica(vista, modelo));
