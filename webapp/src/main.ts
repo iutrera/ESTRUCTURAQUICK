@@ -76,6 +76,7 @@ function init(): void {
     `
     attribute vec3 position;
     uniform mat4 mvp;
+
     uniform float uPointSize;
     void main() {
       gl_Position = mvp * vec4(position, 1.0);
@@ -135,6 +136,7 @@ function init(): void {
 
   const colorLoc = gl.getUniformLocation(program, 'uColor');
   const pointSizeLoc = gl.getUniformLocation(program, 'uPointSize');
+
   gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
 
   const mvpLoc = gl.getUniformLocation(program, 'mvp');
@@ -167,11 +169,11 @@ function init(): void {
     }
   });
 
+
   // Bucle de renderizado.
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     const aspect = canvas.width / canvas.height;
     const size = bounds.radius;
     // Calcula la proyección en función del modo seleccionado.
@@ -213,6 +215,7 @@ function init(): void {
       // Dibuja los nodos como puntos rojos con tamaño ajustable.
       gl.uniform3f(colorLoc, 0.8, 0.1, 0.1);
       gl.uniform1f(pointSizeLoc, pointSize);
+
       gl.drawArrays(gl.POINTS, 0, nodeCount);
     }
 
