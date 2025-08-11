@@ -48,8 +48,8 @@ function createProgram(
   }
   return program;
 }
-
 async function init(): Promise<void> {
+
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
   const gl = canvas.getContext('webgl') as WebGLRenderingContext;
@@ -90,7 +90,6 @@ async function init(): Promise<void> {
 
   // Obtiene la estructura a visualizar (nodos y aristas).
   const estructura: FrameStructure = await loadStructure();
-
   // Analiza su volumen para centrarla en el origen y ajustar la cámara.
   const bounds: StructureBounds = computeBounds(estructura);
   const centeredNodes = estructura.nodes.map((n) => [
@@ -132,7 +131,6 @@ async function init(): Promise<void> {
   const colorLoc = gl.getUniformLocation(program, 'uColor');
   const pointSizeLoc = gl.getUniformLocation(program, 'uPointSize');
   gl.uniform3f(colorLoc, 0.1, 0.4, 0.8);
-
   const mvpLoc = gl.getUniformLocation(program, 'mvp');
   gl.enable(gl.DEPTH_TEST);
 
@@ -162,12 +160,10 @@ async function init(): Promise<void> {
       pointSize = Math.max(pointSize - 1, 1);
     }
   });
-
   // Bucle de renderizado.
   function render(): void {
     gl.clearColor(0.95, 0.95, 0.95, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     const aspect = canvas.width / canvas.height;
     const size = bounds.radius;
     // Calcula la proyección en función del modo seleccionado.

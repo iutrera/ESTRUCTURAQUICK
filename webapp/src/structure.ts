@@ -12,6 +12,7 @@ export interface StructureBounds {
 }
 
 /**
+
  * Devuelve la estructura definida en los ficheros CSV, replicando el
  * comportamiento del script `representatodo.py`.
  */
