@@ -203,47 +203,125 @@ def apply_translational_repeats(coords_map, beams, inputs):
     )
 
 
-def apply_loads(load_rows, node_off_len, node_off_wid, mem_off_len, mem_off_wid, rep_len, rep_wid):
-    """Genera las líneas de carga replicadas según los offsets calculados."""
-    lines = []
+def apply_loads(
+    load_rows,
+    node_off_len,
+    node_off_wid,
+    mem_off_len,
+    mem_off_wid,
+    rep_len,
+    rep_wid,
+):
+    """Genera estructuras de carga replicadas según los offsets calculados.
+
+    En lugar de devolver cadenas con el comando preformateado, se devuelve una
+    lista de diccionarios con campos normalizados.  Esto facilita la
+    exportación a distintos formatos (por ejemplo, S2K de SAP2000).
+    """
+
+    loads = []
     for row in load_rows:
         t = row.get("Type", "").upper()
-        direction = row.get("Direction", "")
+        direction = row.get("Direction", "").upper()
         try:
             value = float(row.get("Value", 0))
         except Exception:
             value = 0.0
+
         base_node = row.get("BaseNode")
         base_member = row.get("BaseMember")
         base_node = int(base_node) if base_node else None
         base_member = int(base_member) if base_member else None
+
         for i in range(rep_len + 1):
             for j in range(rep_wid + 1):
                 if t == "JOINT" and base_node is not None:
                     nid = base_node + i * node_off_len + j * node_off_wid
-                    lines.append(f"JOINT LOAD {nid} {direction} {value}")
+                    loads.append(
+                        {
+                            "type": "JOINT",
+                            "id": nid,
+                            "dir": direction,
+                            "value": value,
+                        }
+                    )
                 elif t == "MEMBER" and base_member is not None:
                     mid = base_member + i * mem_off_len + j * mem_off_wid
-                    lines.append(f"MEMBER LOAD {mid} {direction} {value}")
-    return lines
+                    # El campo ``direction`` puede venir como "UNI GY" o similar.
+                    dir_tokens = direction.split()
+                    load_type = dir_tokens[0] if dir_tokens else "UNI"
+                    load_dir = dir_tokens[1] if len(dir_tokens) > 1 else "GX"
+                    loads.append(
+                        {
+                            "type": "MEMBER",
+                            "id": mid,
+                            "load_type": load_type,
+                            "dir": load_dir,
+                            "value": value,
+                        }
+                    )
+    return loads
 
 
-def export_sap2000(filename, coords_map, beams, load_lines):
-    """Exporta un fichero de texto con nodos, vigas, tipos de vigas y cargas."""
+def export_sap2000(filename, coords_map, beams, loads):
+    """Exporta un fichero de texto compatible con SAP2000 (formato S2K)."""
+
     with open(filename, "w", encoding="utf-8") as f:
-        f.write("JOINT COORDINATES\n")
+        # Coordenadas de nodos
+        f.write('TABLE: "JOINT COORDINATES"\n')
+        f.write("Joint\tX\tY\tZ\n")
         for nid, (x, y, z) in sorted(coords_map.items()):
-            f.write(f" {nid} {x:.3f} {y:.3f} {z:.3f}\n")
-        f.write("MEMBER INCIDENCES\n")
+            f.write(f"{nid}\t{x:.3f}\t{y:.3f}\t{z:.3f}\n")
+        f.write("END TABLE\n")
+
+        # Incidencias de vigas
+        f.write('TABLE: "FRAME INCIDENCES"\n')
+        f.write("Frame\tPointI\tPointJ\n")
         for b in beams:
-            f.write(f" {b['id']} {b['start_node']} {b['end_node']}\n")
-        f.write("MEMBER TYPES\n")
+            f.write(f"{b['id']}\t{b['start_node']}\t{b['end_node']}\n")
+        f.write("END TABLE\n")
+
+        # Tipos o secciones asignadas
+        f.write('TABLE: "FRAME SECTION ASSIGNMENTS"\n')
+        f.write("Frame\tSection\n")
         for b in beams:
-            f.write(f" {b['id']} {b.get('type', '?')}\n")
-        if load_lines:
-            f.write("LOADS\n")
-            for line in load_lines:
-                f.write(line + "\n")
+            f.write(f"{b['id']}\t{b.get('type', '?')}\n")
+        f.write("END TABLE\n")
+
+        # Cargas en nodos
+        joint_loads = [ld for ld in loads if ld["type"] == "JOINT"]
+        if joint_loads:
+            f.write('TABLE: "JOINT LOADS - FORCE"\n')
+            f.write("Joint\tLoadPat\tFX\tFY\tFZ\tMX\tMY\tMZ\n")
+            for ld in joint_loads:
+                fx = fy = fz = mx = my = mz = 0.0
+                val = ld["value"]
+                d = ld["dir"].upper()
+                if d == "FX":
+                    fx = val
+                elif d == "FY":
+                    fy = val
+                elif d == "FZ":
+                    fz = val
+                elif d == "MX":
+                    mx = val
+                elif d == "MY":
+                    my = val
+                elif d == "MZ":
+                    mz = val
+                f.write(f"{ld['id']}\tDEAD\t{fx}\t{fy}\t{fz}\t{mx}\t{my}\t{mz}\n")
+            f.write("END TABLE\n")
+
+        # Cargas en vigas (uniformes)
+        frame_loads = [ld for ld in loads if ld["type"] == "MEMBER"]
+        if frame_loads:
+            f.write('TABLE: "FRAME LOADS - DISTRIBUTED"\n')
+            f.write("Frame\tLoadPat\tDir\tType\tDist1\tDist2\tValue1\tValue2\n")
+            for ld in frame_loads:
+                f.write(
+                    f"{ld['id']}\tDEAD\t{ld['dir']}\t{ld['load_type']}\t0\t1\t{ld['value']}\t{ld['value']}\n"
+                )
+            f.write("END TABLE\n")
 
 
 # ------------------------
@@ -400,7 +478,7 @@ def main():
     mem_off_len = len_tracker.get("member", 0)
     mem_off_wid = wid_tracker.get("member", 0)
 
-    load_lines = apply_loads(
+    load_defs = apply_loads(
         load_rows,
         node_off_len,
         node_off_wid,
@@ -534,7 +612,7 @@ def main():
         except Exception:
             fname = "estructura.s2k"
         if fname:
-            export_sap2000(fname, coords_map, beams_raw, load_lines)
+            export_sap2000(fname, coords_map, beams_raw, load_defs)
             print(f"📤 Fichero SAP2000 generado: {fname}")
 
     export_btn.on_clicked(on_export)
